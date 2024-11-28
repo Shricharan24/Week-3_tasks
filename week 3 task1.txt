@@ -1,0 +1,74 @@
+
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <stack>
+using namespace std;
+class MenuItem {
+public:
+    string name;
+    vector<shared_ptr<MenuItem>> subItems;
+
+    MenuItem(const string& itemName) : name(itemName) {}
+
+    void addSubItem(shared_ptr<MenuItem> subItem) {
+        subItems.push_back(subItem);
+    }
+};
+
+
+class MenuSystem {
+private:
+    shared_ptr<MenuItem> root;
+    stack<shared_ptr<MenuItem>> navigationStack;
+
+public:
+    MenuSystem(shared_ptr<MenuItem> rootMenu) : root(rootMenu) {
+        navigationStack.push(root);
+    }
+
+    void displayMenu() {
+        shared_ptr<MenuItem> currentMenu = navigationStack.top();
+        cout << "Current Menu: " << currentMenu->name << endl;
+        for (size_t i = 0; i < currentMenu->subItems.size(); ++i) {
+            cout << i + 1 << ". " << currentMenu->subItems[i]->name << endl;
+        }
+        cout << "0. Back" << endl;
+    }
+
+    void navigate(int option) {
+        if (option == 0 && navigationStack.size() > 1) {
+            navigationStack.pop();
+        } else {
+            shared_ptr<MenuItem> currentMenu = navigationStack.top();
+            if (option > 0 && option <= currentMenu->subItems.size()) {
+                navigationStack.push(currentMenu->subItems[option - 1]);
+            }
+        }
+    }
+};
+int main() {
+    auto mainMenu = make_shared<MenuItem>("Main Menu");
+    auto settings = make_shared<MenuItem>("Settings");
+    auto media = make_shared<MenuItem>("Media");
+
+    settings->addSubItem(make_shared<MenuItem>("Display Settings"));
+    settings->addSubItem(make_shared<MenuItem>("Audio Settings"));
+    media->addSubItem(make_shared<MenuItem>("Radio"));
+    media->addSubItem(make_shared<MenuItem>("Bluetooth Audio"));
+
+    mainMenu->addSubItem(settings);
+    mainMenu->addSubItem(media);
+
+    MenuSystem menuSystem(mainMenu);
+
+    int choice;
+    do {
+        menuSystem.displayMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
+        menuSystem.navigate(choice);
+    } while (choice != -1);
+
+    return 0;
+}
