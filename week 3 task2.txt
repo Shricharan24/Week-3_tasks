@@ -1,39 +1,48 @@
+// Include necessary libraries
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <iomanip>  
+#include <iomanip>
 
+// Use standard library namespace
 using namespace std;
 
-
-int Random(int upper, int lower) {
-    return rand() % (upper -lower + 1) + lower;
+// Function to generate random numbers within a specified range
+int Random(int lower, int upper) {
+    // Calculate random number between lower and upper bounds
+    return rand() % (upper - lower + 1) + lower;
 }
 
+// Function to display vehicle data
 void displayData(int speed, int fuelLevel, int engineTemp) {
-    
-  
-
-    cout << "Speed: "<< speed << " km/h  "
+    // Display speed, fuel level, and engine temperature
+    cout << "Speed: " << speed << " km/h  "
          << "Fuel: " << fuelLevel << "%  "
          << "Temperature: " << engineTemp << "°C" << endl;
 
+    // Check for engine temperature warning
     if (engineTemp > 100) {
         cout << "WARNING: Engine temperature is too high!" << endl;
     }
 
+    // Check for low fuel level warning
     if (fuelLevel < 10) {
         cout << "WARNING: Fuel level is critically low!" << endl;
     }
 }
 
+// Main function
 int main() {
-  
-   srand(time(0));
-       int speed = Random(0, 220); 
-       int fuelLevel = Random(0,50);  
-       int engineTemp = Random(60, 120); 
-    
+    // Seed random number generator with current time
+    srand(time(0));
+
+    // Generate random vehicle data
+    int speed = Random(0, 220); // Speed between 0-220 km/h
+    int fuelLevel = Random(0, 100); // Fuel level between 0-100%
+    int engineTemp = Random(60, 120); // Engine temperature between 60-120°C
+
+    // Display generated vehicle data
     displayData(speed, fuelLevel, engineTemp);
+
     return 0;
 }
