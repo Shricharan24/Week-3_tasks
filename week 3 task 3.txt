@@ -1,60 +1,95 @@
-
+// Include necessary libraries
 #include <iostream>
 #include <queue>
 #include <string>
 #include <ctime>
-#include <cstdlib>
-using namespace std;
+#include <random>
+
+// Define event types
+enum class EventType {
+    Tap,     // Tap event
+    Swipe    // Swipe event
+};
+
+// Event class definition
 class Event {
 public:
-    string eventType;
-    int x, y;
-    time_t timestamp;
+    EventType eventType;  // Event type
+    int x, y;             // Event coordinates
+    time_t timestamp;     // Event timestamp
 
-    Event(const string& type, int posX, int posY) 
+    // Constructor to initialize event
+    Event(EventType type, int posX, int posY) 
         : eventType(type), x(posX), y(posY) {
-        timestamp = time(nullptr);
+        timestamp = time(nullptr); // Set current time as timestamp
     }
 };
-queue<Event> eventQueue;
 
+// Event queue to store events
+std::queue<Event> eventQueue;
+
+// Function to handle events
 void handleEvent(const Event& event) {
-    if (event.eventType == "Tap") {
-        cout << "Tap event at (" << event.x << ", " << event.y << ")" << endl;
-    } else if (event.eventType == "Swipe") {
-    
-        
-        string direction;
-        if (abs(event.x) > abs(event.y)) {
-            direction = event.x > 0 ? "Right" : "Left";
-        } else {
-            direction = event.y > 0 ? "Down" : "Up";
-        }
-        cout << "Swipe event towards " << direction << endl;
+    // Handle events based on type
+    switch (event.eventType) {
+        case EventType::Tap:
+            // Handle tap event
+            std::cout << "Tap event at (" << event.x << ", " << event.y << ")" << std::endl;
+            break;
+        case EventType::Swipe:
+            // Determine swipe direction
+            std::string direction;
+            if (abs(event.x) > abs(event.y)) {
+                direction = event.x > 0 ? "Right" : "Left";
+            } else {
+                direction = event.y > 0 ? "Down" : "Up";
+            }
+            // Handle swipe event
+            std::cout << "Swipe event towards " << direction << std::endl;
+            break;
+        default:
+            // Handle unknown event type
+            std::cout << "Unknown event type" << std::endl;
     }
 }
 
+// Function to process events in the queue
 void processEvents() {
+    // Continue processing events until queue is empty
     while (!eventQueue.empty()) {
-        Event event = eventQueue.front();
-        eventQueue.pop();
-        handleEvent(event);
+        // Move event from queue to local variable
+        Event event = std::move(eventQueue.front());
+        eventQueue.pop(); // Remove event from queue
+        handleEvent(event); // Handle event
     }
 }
-void generateRandomEvents(int numEvents) {
-    for (int i = 0; i < numEvents; ++i) {
-        int type = rand() % 2;
-        int x = rand() % 100 - 50;  
-        int y = rand() % 100 - 50;
 
-        string eventType = (type == 0) ? "Tap" : "Swipe";
+// Function to generate random events
+void generateRandomEvents(int numEvents) {
+    // Initialize random number generator
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> xDist(-50, 50); // Distribution for x-coordinate
+    std::uniform_int_distribution<> eventTypeDist(0, 1); // Distribution for event type
+
+    // Generate specified number of events
+    for (int i = 0; i < numEvents; ++i) {
+        // Generate random event type
+        EventType eventType = static_cast<EventType>(eventTypeDist(gen));
+        // Generate random coordinates
+        int x = xDist(gen);
+        int y = xDist(gen);
+
+        // Create and add event to queue
         eventQueue.push(Event(eventType, x, y));
     }
 }
 
+// Main function
 int main() {
-    srand(time(0));  
-    generateRandomEvents(10); 
-    processEvents(); 
+    // Generate 10 random events
+    generateRandomEvents(10);
+    // Process events in queue
+    processEvents();
     return 0;
 }
