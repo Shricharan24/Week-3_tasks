@@ -1,9 +1,10 @@
-// Include necessary libraries
+
 #include <iostream>
 #include <queue>
 #include <string>
 #include <ctime>
 #include <random>
+using namespace std;
 
 // Define event types
 enum class EventType {
@@ -34,22 +35,22 @@ void handleEvent(const Event& event) {
     switch (event.eventType) {
         case EventType::Tap:
             // Handle tap event
-            std::cout << "Tap event at (" << event.x << ", " << event.y << ")" << std::endl;
+            cout << "Tap event at (" << event.x << ", " << event.y << ")" << endl;
             break;
         case EventType::Swipe:
             // Determine swipe direction
-            std::string direction;
+            string direction;
             if (abs(event.x) > abs(event.y)) {
                 direction = event.x > 0 ? "Right" : "Left";
             } else {
                 direction = event.y > 0 ? "Down" : "Up";
             }
             // Handle swipe event
-            std::cout << "Swipe event towards " << direction << std::endl;
+            cout << "Swipe event towards " << direction << endl;
             break;
         default:
             // Handle unknown event type
-            std::cout << "Unknown event type" << std::endl;
+            cout << "Unknown event type" << endl;
     }
 }
 
@@ -58,7 +59,7 @@ void processEvents() {
     // Continue processing events until queue is empty
     while (!eventQueue.empty()) {
         // Move event from queue to local variable
-        Event event = std::move(eventQueue.front());
+        Event event = move(eventQueue.front());
         eventQueue.pop(); // Remove event from queue
         handleEvent(event); // Handle event
     }
@@ -67,10 +68,10 @@ void processEvents() {
 // Function to generate random events
 void generateRandomEvents(int numEvents) {
     // Initialize random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> xDist(-50, 50); // Distribution for x-coordinate
-    std::uniform_int_distribution<> eventTypeDist(0, 1); // Distribution for event type
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> xDist(-50, 50); // Distribution for x-coordinate
+    uniform_int_distribution<> eventTypeDist(0, 1); // Distribution for event type
 
     // Generate specified number of events
     for (int i = 0; i < numEvents; ++i) {
@@ -85,11 +86,8 @@ void generateRandomEvents(int numEvents) {
     }
 }
 
-// Main function
 int main() {
-    // Generate 10 random events
-    generateRandomEvents(10);
-    // Process events in queue
+    generateRandomEvents(10);//get random events
     processEvents();
     return 0;
 }
