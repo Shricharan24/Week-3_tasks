@@ -1,100 +1,60 @@
-
-// Include necessary libraries
 #include <iostream>
 #include <vector>
-#include <memory>
-#include <stack>
-
-// Use standard library namespace
+#include <string>
 using namespace std;
-
-// MenuItem class definition
-class MenuItem {
-public:
-    string name; // Menu item name
-    vector<shared_ptr<MenuItem>> subItems; // Submenu items
-
-    // Constructor to initialize menu item
-    MenuItem(const string& itemName) : name(itemName) {}
-
-    // Add submenu item
-    void addSubItem(shared_ptr<MenuItem> subItem) {
-        subItems.push_back(subItem);
+ 
+void display(vector<string>& menuItems){
+    for(int i =0;i<menuItems.size();i++){
+        cout<<i+1<<"."<<menuItems[i]<<endl;
     }
-};
+}
+int main() {
 
-// MenuSystem class definition
-class MenuSystem {
-private:
-    shared_ptr<MenuItem> root; // Root menu item
-    stack<shared_ptr<MenuItem>> navigationStack; // Navigation stack
-
-public:
-    // Constructor to initialize menu system
-    MenuSystem(shared_ptr<MenuItem> rootMenu) : root(rootMenu) {
-        navigationStack.push(root); // Initialize navigation stack
-    }
-
-    // Display current menu
-    void displayMenu() {
-        shared_ptr<MenuItem> currentMenu = navigationStack.top(); // Get current menu
-        cout << "Current Menu: " << currentMenu->name << endl; // Display menu name
-        for (size_t i = 0; i < currentMenu->subItems.size(); ++i) {
-            // Display submenu items
-            cout << i + 1 << ". " << currentMenu->subItems[i]->name << endl;
-        }
-        cout << "0. Back" << endl; // Display back option
-    }
-
-    // Navigate to selected menu option
-    void navigate(int option) {
-        if (option == 0 && navigationStack.size() > 1) {
-            // Go back if option 0 is selected
-            navigationStack.pop();
-        } else {
-            shared_ptr<MenuItem> currentMenu = navigationStack.top(); // Get current menu
-            if (option > 0 && option <= currentMenu->subItems.size()) {
-                // Navigate to selected submenu item
-                navigationStack.push(currentMenu->subItems[option - 1]);
+    vector<string> mainMenu = {"Settings","Media"};
+    vector<string> settingsMenu = {"Display Setting","Audio Setting"};
+    vector<string> displaySettings = {"Submenu"};
+    vector<string> audioSettings = {"Submenu"};
+    vector<string> mediaMenu = {"Radio","Bluetooth Audio"};
+    vector<string> radioMenu = {"Submenu"};
+    vector<string> bluetoothAudio = {"Submenu"};
+    vector<string>* currentMenu = &mainMenu;
+    bool isInMenu = true;
+    while(isInMenu){
+        cout<<"Current Menu : "<<endl;
+        display(*currentMenu);
+        cout<<endl;
+         cout << "Select an option:-"<<endl;
+        cout << "1: Navigate down (select)"<<endl;
+        cout << "2: Navigate up (go back)"<<endl;
+        cout << "3: Enter submenu (if available)"<<endl;
+        cout << "0: Exit"<<endl;
+        cout << "Choice: ";
+        int choice;
+        cin>>choice;
+        cout<<endl;
+        if(choice == 0){
+            cout<<"exiting..."<<endl;
+            isInMenu = false;
+        }else if(choice == 1 || choice == 3){
+            int selectSubMenu;
+            cout<<"Select Submenu of (1.Setting , 2.Media)"<<endl;
+            cin>>selectSubMenu;
+            if(selectSubMenu == 1){
+                currentMenu = &settingsMenu;
+            }else if(selectSubMenu == 2){
+                currentMenu = &mediaMenu;
+            }else{
+                cout<<"Invalid submenu"<<endl;
+            }
+        }else if (choice == 2) {
+            if (currentMenu == &settingsMenu || currentMenu == &mediaMenu) {
+                currentMenu = &mainMenu;
+            } else if (currentMenu == &displaySettings || currentMenu == &audioSettings) {
+                currentMenu = &settingsMenu;
+            } else if (currentMenu == &radioMenu || currentMenu == &bluetoothAudio) {
+                currentMenu = &mediaMenu;
             }
         }
     }
-};
-
-// Main function
-int main() {
-    // Create main menu item
-    auto mainMenu = make_shared<MenuItem>("Main Menu");
-
-    // Create submenu items
-    auto settings = make_shared<MenuItem>("Settings");
-    auto media = make_shared<MenuItem>("Media");
-
-    // Add submenu items to settings
-    settings->addSubItem(make_shared<MenuItem>("Display Settings"));
-    settings->addSubItem(make_shared<MenuItem>("Audio Settings"));
-
-    // Add submenu items to media
-    media->addSubItem(make_shared<MenuItem>("Radio"));
-    media->addSubItem(make_shared<MenuItem>("Bluetooth Audio"));
-
-    // Add settings and media to main menu
-    mainMenu->addSubItem(settings);
-    mainMenu->addSubItem(media);
-
-    // Create menu system
-    MenuSystem menuSystem(mainMenu);
-
-    int choice;
-    do {
-        // Display menu and get user choice
-        menuSystem.displayMenu();
-        cout << "Enter your choice: ";
-        cin >> choice;
-
-        // Navigate to selected menu option
-        menuSystem.navigate(choice);
-    } while (choice != -1); // Exit on -1
-
     return 0;
 }
